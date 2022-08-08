@@ -1,143 +1,160 @@
+// Copyright (c) 2022 Ivan Teplov
 (function() {
-    var canvas, ctx, 
-    ballX, ballY, 
-    ballSpeedX = -5, ballSpeedY = 2, 
-    player1Y, player2Y, 
-    player1Score = 0, player2Score = 0;
+    const canvas = document.querySelector('#canvas')
+    const context = canvas.getContext('2d')
 
-    var showingWinScreen = false;
-    const PLAYER_HEIGHT = 100, PLAYER_WIDTH = 10;
-    const WINNING_SCORE = 3;
+    const ball = {
+        x: 0,
+        y: 0,
+        speed: {
+            x: -5,
+            y: 2
+        }
+    }
 
-    window.onload = function() {
-        canvas = document.getElementById('canvas');
-        ctx = canvas.getContext("2d");
+    const firstPlayer = {
+        y: 0,
+        score: 0
+    }
+
+    const secondPlayer = {
+        y: 0,
+        score: 0
+    }
+    
+    let showingWinScreen = false
+
+    const playerHeight = 100
+    const playerWidth = 10
+    const winningScore = 3
+    const framesPerSecond = 50
+
+    window.addEventListener('load', function() {
+        resetBall()
         
-        resetBall();
-        
-        player1Y = canvas.height / 2;
-        player2Y = canvas.height / 2;
-
-        var framesPerSecond = 50;
+        firstPlayer.y = canvas.height / 2
+        secondPlayer.y = canvas.height / 2
 
         setInterval(function() {
-            moveEverything();
-            drawEverything();
-        }, 1000 / framesPerSecond);
+            moveEverything()
+            drawEverything()
+        }, 1000 / framesPerSecond)
 
         canvas.onmousemove = function(event) {
-            player1Y = event.clientY - canvas.getBoundingClientRect().top 
-                        - window.scrollY - PLAYER_HEIGHT / 2;
-        };
+            firstPlayer.y = event.clientY - canvas.getBoundingClientRect().top
+                - window.scrollY - playerHeight / 2
+        }
 
         canvas.onclick = function() {
             if (showingWinScreen) {
-                player1Score = 0;
-                player2Score = 0;
-                showingWinScreen = false;
+                firstPlayer.score = 0
+                secondPlayer.score = 0
+                showingWinScreen = false
             }
-        };
-    };
+        }
+    })
 
     function drawNet() {
-        for (var i = 0; i < canvas.height; i+= 40) {
-            colorRect(canvas.width / 2 - 1, i, 2, 20, 'white');
+        for (let i = 0; i < canvas.height; i+= 40) {
+            colorRect(canvas.width / 2 - 1, i, 2, 20, 'white')
         }
     }
 
     function resetBall() {
-        if (player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE) {
-            ballX = canvas.width / 2;
-            ballY = canvas.height / 2 + 50;
-            ballSpeedX *= -1;
-            ballSpeedY *= 0.3;
-            showingWinScreen = true;
-            return;
+        if (firstPlayer.score >= winningScore || secondPlayer.score >= winningScore) {
+            ball.x = canvas.width / 2
+            ball.y = canvas.height / 2 + 50
+            ball.speed.x *= -1
+            ball.speed.y *= 0.3
+            showingWinScreen = true
+            return
         }
-        ballX = canvas.width / 2;
-        ballY = canvas.height / 2;
-        ballSpeedX *= -1;
-        ballSpeedY *= 0.3;
+
+        ball.x = canvas.width / 2
+        ball.y = canvas.height / 2
+        ball.speed.x *= -1
+        ball.speed.y *= 0.3
     }
 
     function moveEverything() {
-        if (showingWinScreen) return;
-        ballX += ballSpeedX;
-        ballY += ballSpeedY;
+        if (showingWinScreen) return
 
-        if (ballX < 0) {
-            if (ballY > player1Y && ballY < player1Y + PLAYER_HEIGHT) {
-                ballSpeedX *= -1;
+        ball.x += ball.speed.x
+        ball.y += ball.speed.y
+
+        if (ball.x < 0) {
+            if (ball.y > firstPlayer.y && ball.y < firstPlayer.y + playerHeight) {
+                ball.speed.x *= -1
                 
-                var deltaY = ballY - (player1Y + PLAYER_HEIGHT / 2);
-                ballSpeedY = deltaY * 0.25;
+                var deltaY = ball.y - (firstPlayer.y + playerHeight / 2)
+                ball.speed.y = deltaY * 0.25
             } else {
-                player2Score++;
-                resetBall();
+                secondPlayer.score++
+                resetBall()
             }
         }
-        if (ballX > canvas.width) {
-            if (ballY > player2Y && ballY < player2Y + PLAYER_HEIGHT) {
-                ballSpeedX *= -1;
 
-                var deltaY = ballY - (player2Y + PLAYER_HEIGHT / 2);
-                ballSpeedY = deltaY * 0.25;
+        if (ball.x > canvas.width) {
+            if (ball.y > secondPlayer.y && ball.y < secondPlayer.y + playerHeight) {
+                ball.speed.x *= -1
+
+                var deltaY = ball.y - (secondPlayer.y + playerHeight / 2)
+                ball.speed.y = deltaY * 0.25
             } else {
-                player1Score++;
-                resetBall();
+                firstPlayer.score++
+                resetBall()
             }
         }
-        if (ballY < 0 || ballY > canvas.height) {
-            ballSpeedY *= -1;
+
+        if (ball.y < 0 || ball.y > canvas.height) {
+            ball.speed.y *= -1
         }
 
-        if (ballSpeedX > 0) {
-            if (Math.abs(player2Y + PLAYER_HEIGHT / 2 - ballY) > 30) {
-                if (player2Y + PLAYER_HEIGHT / 2 < ballY) {
-                    player2Y += 4;
-                } else {
-                    player2Y -= 4;
-                }
+        if (ball.speed.x > 0 && Math.abs(secondPlayer.y + playerHeight / 2 - ball.y) > 30) {
+            if (secondPlayer.y + playerHeight / 2 < ball.y) {
+                secondPlayer.y += 4
+            } else {
+                secondPlayer.y -= 4
             }
         }
     }
 
     function drawEverything() {
-        colorRect(0, 0, canvas.width, canvas.height, '#000');
-        colorArc(ballX, ballY, 10, '#fff');
-        colorRect(0, player1Y, PLAYER_WIDTH, PLAYER_HEIGHT, '#fff');
-        colorRect(canvas.width - PLAYER_WIDTH, player2Y, PLAYER_WIDTH, PLAYER_HEIGHT, '#fff');
+        colorRect(0, 0, canvas.width, canvas.height, '#000')
+        colorArc(ball.x, ball.y, 10, '#fff')
+        colorRect(0, firstPlayer.y, playerWidth, playerHeight, '#fff')
+        colorRect(canvas.width - playerWidth, secondPlayer.y, playerWidth, playerHeight, '#fff')
         
-        drawNet();
+        drawNet()
 
-        ctx.font = "12pt Arial";
-        ctx.fillStyle = '#fff';
-        ctx.fillText(player1Score, canvas.width / 3, 50);
-        ctx.fillText(player2Score, canvas.width / 3 * 2, 50);
+        ctx.font = "12pt Arial"
+        ctx.fillStyle = '#fff'
+        ctx.fillText(firstPlayer.score, canvas.width / 3, 50)
+        ctx.fillText(secondPlayer.score, canvas.width / 3 * 2, 50)
         if (showingWinScreen) {
-            ctx.textAlign = "center";
-            ctx.fillText("Нажмите, чтобы продолжить", canvas.width / 2, canvas.height - 100);
-            if (player1Score > player2Score) {
-                ctx.fillText("Вы победили!", canvas.width / 2, canvas.height /2);
-            } else if (player2Score > player1Score) {
-                ctx.fillText("Вы проиграли!", canvas.width / 2, canvas.height /2);
+            ctx.textAlign = "center"
+            ctx.fillText("Нажмите, чтобы продолжить", canvas.width / 2, canvas.height - 100)
+            if (firstPlayer.score > secondPlayer.score) {
+                ctx.fillText("Вы победили!", canvas.width / 2, canvas.height /2)
+            } else if (secondPlayer.score > firstPlayer.score) {
+                ctx.fillText("Вы проиграли!", canvas.width / 2, canvas.height /2)
             } else {
-                ctx.fillText("Ничья!", canvas.width / 2, canvas.height /2);
+                ctx.fillText("Ничья!", canvas.width / 2, canvas.height /2)
             }
         }
     }
 
     function colorArc(x, y, r, color) {
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.fill();
+        ctx.fillStyle = color
+        ctx.beginPath()
+        ctx.arc(x, y, r, 0, Math.PI * 2, true)
+        ctx.closePath()
+        ctx.fill()
     }
 
     function colorRect(x, y, w, h, color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(x, y, w, h);
+        ctx.fillStyle = color
+        ctx.fillRect(x, y, w, h)
     }
-})();
+})()
 
