@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Ivan Teplov
+// Copyright (c) 2019-2022 Ivan Teplov
 (function() {
     const canvas = document.querySelector('#canvas')
     const context = canvas.getContext('2d')
