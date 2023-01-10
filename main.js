@@ -127,34 +127,34 @@
         
         drawNet()
 
-        ctx.font = "12pt Arial"
-        ctx.fillStyle = '#fff'
-        ctx.fillText(firstPlayer.score, canvas.width / 3, 50)
-        ctx.fillText(secondPlayer.score, canvas.width / 3 * 2, 50)
+        context.font = "12pt Arial"
+        context.fillStyle = '#fff'
+        context.fillText(firstPlayer.score, canvas.width / 3, 50)
+        context.fillText(secondPlayer.score, canvas.width / 3 * 2, 50)
         if (showingWinScreen) {
-            ctx.textAlign = "center"
-            ctx.fillText("Нажмите, чтобы продолжить", canvas.width / 2, canvas.height - 100)
+            context.textAlign = "center"
+            context.fillText("Нажмите, чтобы продолжить", canvas.width / 2, canvas.height - 100)
             if (firstPlayer.score > secondPlayer.score) {
-                ctx.fillText("Вы победили!", canvas.width / 2, canvas.height /2)
+                context.fillText("Вы победили!", canvas.width / 2, canvas.height /2)
             } else if (secondPlayer.score > firstPlayer.score) {
-                ctx.fillText("Вы проиграли!", canvas.width / 2, canvas.height /2)
+                context.fillText("Вы проиграли!", canvas.width / 2, canvas.height /2)
             } else {
-                ctx.fillText("Ничья!", canvas.width / 2, canvas.height /2)
+                context.fillText("Ничья!", canvas.width / 2, canvas.height /2)
             }
         }
     }
 
     function colorArc(x, y, r, color) {
-        ctx.fillStyle = color
-        ctx.beginPath()
-        ctx.arc(x, y, r, 0, Math.PI * 2, true)
-        ctx.closePath()
-        ctx.fill()
+        context.fillStyle = color
+        context.beginPath()
+        context.arc(x, y, r, 0, Math.PI * 2, true)
+        context.closePath()
+        context.fill()
     }
 
     function colorRect(x, y, w, h, color) {
-        ctx.fillStyle = color
-        ctx.fillRect(x, y, w, h)
+        context.fillStyle = color
+        context.fillRect(x, y, w, h)
     }
 })()
 
